@@ -1,6 +1,6 @@
 # 040 — Code-narrator persona
 
-**Status:** PROPOSED | **Target repo:** shared (`@code-story` package + a persona) | **Depends on:** 010, 011 | **Repo:** code-storybook
+**Status:** PROPOSED | **Phase:** 1 | **Depends on:** 010, 011
 
 ## Goal
 A small proactive persona that watches for new/updated stories and enriches them with an

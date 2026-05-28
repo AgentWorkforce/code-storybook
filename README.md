@@ -8,46 +8,51 @@ metrics (churn, hotspots, coverage). Agents do the writing; humans read and stay
 This repo holds the **spec program** and the **runbook**. It is built spec-by-spec by Ricky
 (the workflow agent) via an overnight runner — not hand-written all at once.
 
-## How it works
+## Two phases
+
+- **Phase 1 — self-contained (default).** Everything lives in this repo. A **watcher** persona
+  synthesizes stories from artifacts products *already* write to relayfile (pull, not push), and
+  a **standalone web viewer** renders them. **Zero changes to sage/MSD/nightcto/pear.** One repo,
+  one deploy, per-wave PRs. → `specs/storybook/`
+- **Phase 2 — deferred, cross-repo (optional).** When you want *richer* stories (products emit
+  with their internal context) or stories rendered *inline* inside Pear/MSD, edit those repos.
+  Cross-repo, so it runs via dispatch mode. → `specs/storybook-phase2/`
+
+Start with Phase 1; reach for Phase 2 only where the extra richness/inline-surface pays off.
+
+## How Phase 1 works
 
 ```
-Sage / MSD / NightCTO workflows
-   │  (call the shared story-writer skill as a side-effect of their work)
-   ▼
-@code-story/skill  ──writes──▶  relayfile  /stories/<type>/<id>.json   (the artifact)
-                                    ▲   ▲
-              code-narrator persona ┘   └ code-health persona (churn/hotspots/coverage)
-                                    │
-                    @code-story/react  (one shared, artifact-driven, read-only renderer,
-                       ▲ extracted from MSD's renderer + PRStory)
-        ┌──────────────┼───────────────┐
-   MSD webapp      Pear `story`     web guided tour (stepped)
-   (primary web)   view mode        hosted by MSD webapp + Pear
+products already write to relayfile (no storybook code in them):
+   Sage → /notion,/linear   MSD → /github/**/reviews   NightCTO → /nightcto/signals
+                       │ (the watcher OBSERVES these)
+                       ▼
+   personas/story-builder ─synthesize→ @code-story/skill ─writes→ /stories/<type>/<id>.json
+                                            ▲   ▲
+                      code-narrator persona ┘   └ code-health persona (churn/hotspots/coverage)
+                                            │
+                                 @code-story/react (read-only renderer, vendored from MSD)
+                                            │
+                                 web/ standalone viewer + guided tour   ◀── the Phase 1 surface
 ```
 
-- **relayfile** is the artifact substrate — stories are JSON files; "the filesystem is the protocol."
-- The **renderer is extracted from MSD** (custom tokenizer highlighting, `diffUtils`, and the
-  `PRStory` slide-deck), generalized into one backend-free `@code-story/react` package that MSD's
-  webapp, Pear, and the web tour all consume — so no surface reimplements code rendering.
-- Two helper **personas** (narrator, health) enrich stories; the three product agents emit them.
+- **relayfile** is the substrate *and* the integration: the watcher reads files products already
+  produce, so Phase 1 touches no other repo. "The filesystem is the protocol."
+- The renderer is **vendored from MSD** (its tokenizer highlighting, `diffUtils`, and the `PRStory`
+  slide-deck) into one backend-free `@code-story/react` — a one-time copy, no MSD import/edit.
 
-See [`specs/storybook/PROGRAM.md`](specs/storybook/PROGRAM.md) for the full architecture and
-[`docs/storybook-boundary.md`] (produced by spec `000`) for the frozen scope.
+See [`specs/storybook/PROGRAM.md`](specs/storybook/PROGRAM.md) for the architecture and
+`docs/storybook-boundary.md` (produced by spec `000`) for the frozen scope.
 
-## Why its own repo
+## Phase 1 spec program (14 specs, 5 waves — all in this repo)
 
-Storybook spans repos — Sage, MSD, Pear, and a shared `@code-story` package all participate.
-It does not belong inside any one of them, so the spec program + orchestration live here.
-
-## Spec program (14 specs, 5 waves)
-
-| Wave | Specs | Target |
-|---|---|---|
-| 0 — Contract | `000` boundary · `001` `CodeStory` schema | shared `@code-story` |
-| 1 — Writer | `010` story-writer skill · `011` index + ACL | shared `@code-story` |
-| 2 — Emit | `020` Sage planning · `021` MSD review · `022` NightCTO runtime | sage · My-Senior-Dev/app · nightcto |
-| 3 — Renderer | `030` extract `@code-story/react` from MSD · `031` Pear mount · `032` MSD webapp surface · `033` web tour | My-Senior-Dev/app → shared · pear |
-| 4 — Narrate/health/proof | `040` narrator persona · `041` health persona · `042` e2e proof | shared (cross-repo e2e) |
+| Wave | Specs |
+|---|---|
+| 0 — Contract | `000` boundary · `001` `CodeStory` schema |
+| 1 — Library | `010` story-writer skill · `011` index + ACL |
+| 2 — Watcher | `020` story-builder · `021` planning synthesis · `022` review synthesis · `023` runtime synthesis |
+| 3 — Renderer + viewer | `030` `@code-story/react` (vendored) · `031` standalone viewer · `032` guided tour |
+| 4 — Narrate/health/proof | `040` narrator persona · `041` health persona · `042` e2e proof |
 
 Each spec is bounded (`Goal / Context / In scope / Out of scope / Acceptance / Review / Handoff`)
 and ends with a reviewer-checkable PASS gate.
@@ -59,60 +64,47 @@ Specs are implemented one at a time by Ricky, in dependency order, with an
 `specs/storybook/_review.md` / `_fix.md`).
 
 ```bash
-# inspect the plan (no side effects)
-./scripts/run-overnight.sh storybook --dry-run
-
-# run it: implement → review → fix each spec, commit, open a draft PR per wave
-./scripts/run-overnight.sh storybook
+# Phase 1 (self-contained, single repo, per-wave PRs)
+./scripts/run-overnight.sh storybook --dry-run    # inspect the plan (no side effects)
+./scripts/run-overnight.sh storybook              # implement → review → fix, commit, PR per wave
 ```
 
 Flags / env:
 - `--from <spec-id>` — resume from a spec (e.g. `--from 030`)
 - `--no-pr` — skip per-wave draft PRs
 - `MAX_REVIEW_ITERS` (default 3) — review/fix loop cap
-- `REVIEW_CMD` / `FIX_CMD` — override the reviewer/fixer invocation (default: Ricky local with `_review.md` / `_fix.md`)
+- `REVIEW_CMD` / `FIX_CMD` — override the reviewer/fixer invocation
 
-### Cross-repo dispatch (automatic)
+### Phase 2 (deferred, cross-repo dispatch)
 
-Storybook is cross-repo, so each spec declares a machine-readable **`**Repo:**` slug** in its
-header. The runner auto-detects these and switches to **dispatch mode**: each spec is
-implemented in its **target repo** on a `results/storybook` branch, and a draft PR is opened
-**per touched repo** — no manual repo-hopping.
-
-Slugs resolve to local repo paths (sibling clones assumed):
-
-| slug | resolves to | holds |
-|---|---|---|
-| `code-storybook` | this repo | the shared `@code-story` package (schema, skill, `react` renderer, helper personas) |
-| `sage` | `$PROJECTS_ROOT/sage` | `020` planning story |
-| `my-senior-dev` | `$PROJECTS_ROOT/../My-Senior-Dev/app` | `021` review story, `030` extract, `032` webapp surface |
-| `nightcto` | `$PROJECTS_ROOT/nightcto` | `022` runtime story |
-| `pear` | `$PROJECTS_ROOT/pear` | `031` story view |
-
-`PROJECTS_ROOT` defaults to this repo's parent; override any path with `REPO_<slug>` env
-(e.g. `REPO_my_senior_dev=/path/to/app`). Inspect routing first with `--dry-run`:
+Phase 2 specs declare a machine-readable `**Repo:**` slug; the runner auto-detects these and
+switches to **dispatch mode** — each spec is implemented in its target repo on a
+`results/storybook-phase2` branch, one draft PR **per touched repo**.
 
 ```bash
-./scripts/run-overnight.sh storybook --dry-run   # prints START <spec> -> <slug> (<repo>)
+./scripts/run-overnight.sh storybook-phase2 --dry-run   # prints START <spec> -> <slug> (<repo>)
+./scripts/run-overnight.sh storybook-phase2
 ```
 
-Because of dependencies, the shared pieces (waves 0–1 + the `030` extract) build first in
-`code-storybook`; publish `@code-story`, then the per-product specs consume it. The runner
-walks them in order and the review cycle gates each before moving on.
+Slugs resolve to local repo paths (sibling clones assumed): `sage`, `nightcto`, `pear` →
+`$PROJECTS_ROOT/<slug>`; `my-senior-dev` → `$PROJECTS_ROOT/../My-Senior-Dev/app`. `PROJECTS_ROOT`
+defaults to this repo's parent; override any path with `REPO_<slug>` (e.g. `REPO_my_senior_dev=…`).
+Phase 2 depends on Phase 1 being merged and `@code-story` published.
 
 ## Spec format & CI
 
 Every numbered spec must carry the sections the runner + reviewer rely on
-(`Goal / In scope / Out of scope / Acceptance / Review / Handoff`) and a valid `**Repo:**`
-slug. `scripts/lint-specs.sh` enforces this and runs in CI (`.github/workflows/lint-specs.yml`)
-on every push/PR touching `specs/`:
+(`Goal / In scope / Out of scope / Acceptance / Review / Handoff`). A `**Repo:**` slug is
+**optional** (Phase 1 omits it; Phase 2 requires it for dispatch) and, when present, must be a
+valid slug. `scripts/lint-specs.sh` enforces this in CI (`.github/workflows/lint-specs.yml`) on
+every push/PR touching `specs/`:
 
 ```bash
-./scripts/lint-specs.sh        # OK — N specs, all have required sections + a valid **Repo:** header
+./scripts/lint-specs.sh        # OK — N specs, all have required sections (and any **Repo:** slug is valid)
 ```
 
 ## Related
 
 - `AgentWorkforce/nightcto` → `specs/persona-migration/` — the reference persona migration this
-  storybook program assumes (NightCTO emits runtime stories from its migrated watch handler).
+  program assumes (NightCTO writes the `/nightcto/signals/**` the runtime synthesizer reads).
 - `AgentWorkforce/nightcto` → `specs/INVENTORY.md` — front door indexing both programs.

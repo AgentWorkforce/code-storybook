@@ -1,6 +1,6 @@
 # 041 — Code-health persona
 
-**Status:** PROPOSED | **Target repo:** shared (`@code-story` package + a persona) | **Depends on:** 001, 011 | **Repo:** code-storybook
+**Status:** PROPOSED | **Phase:** 1 | **Depends on:** 001, 011
 
 ## Goal
 A periodic persona that computes code-health metrics — churn, hotspots, test coverage —

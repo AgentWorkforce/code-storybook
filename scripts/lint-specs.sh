@@ -8,7 +8,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SPECS_ROOT="${1:-$ROOT/specs}"
 
 REQUIRED_SECTIONS=("## Goal" "## In scope" "## Out of scope" "## Acceptance" "## Review" "## Handoff")
-REQUIRED_HEADERS=("**Repo:**")   # machine-readable dispatch target
+# **Repo:** is OPTIONAL: single-repo (Phase 1) specs omit it; cross-repo (Phase 2) specs
+# carry it for dispatch. When present it must resolve to a known slug (checked below).
 
 fail=0
 count=0
@@ -19,10 +20,7 @@ while IFS= read -r f; do
   for s in "${REQUIRED_SECTIONS[@]}"; do
     grep -qF "$s" "$f" || missing="${missing}\n    missing section: ${s}"
   done
-  for h in "${REQUIRED_HEADERS[@]}"; do
-    grep -qF "$h" "$f" || missing="${missing}\n    missing header: ${h}"
-  done
-  # the Repo header must resolve to a known slug
+  # **Repo:** is optional; if present it must resolve to a known slug
   if grep -qF "**Repo:**" "$f"; then
     slug="$(grep -m1 -oE '\*\*Repo:\*\* [A-Za-z0-9_-]+' "$f" | awk '{print $2}')"
     case "$slug" in
@@ -38,9 +36,9 @@ done < <(find "$SPECS_ROOT" -type f -name '[0-9][0-9][0-9]-*.md' | sort)
 
 if [ "$count" -eq 0 ]; then echo "No numbered specs found under $SPECS_ROOT"; exit 1; fi
 if [ "$fail" -eq 0 ]; then
-  echo "OK — $count specs, all have required sections + a valid **Repo:** header."
+  echo "OK — $count specs, all have required sections (and any **Repo:** slug is valid)."
 else
   echo
-  echo "Spec lint failed. Each numbered spec needs: ${REQUIRED_SECTIONS[*]} and a **Repo:** <slug> header."
+  echo "Spec lint failed. Each numbered spec needs: ${REQUIRED_SECTIONS[*]}. (A **Repo:** slug is optional but must be valid if present.)"
 fi
 exit "$fail"

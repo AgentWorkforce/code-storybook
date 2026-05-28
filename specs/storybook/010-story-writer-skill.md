@@ -1,6 +1,6 @@
 # 010 — Story-writer skill
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 001 | **Repo:** code-storybook
+**Status:** PROPOSED | **Phase:** 1 | **Depends on:** 001
 
 ## Goal
 A single callable skill all three agents use to assemble and persist a `CodeStory` to
@@ -30,4 +30,4 @@ Reviewer confirms the writer is the sole `/stories` write path, always validates
 writing, is idempotent on `id`, and the builder covers every schema section. PASS on green tests.
 
 ## Handoff
-020–022 import the builder; 030 reads what it writes.
+020–023 build stories via the writer; 030 renders what it writes.
