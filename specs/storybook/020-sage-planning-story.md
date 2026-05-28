@@ -1,6 +1,6 @@
 # 020 — Sage planning story
 
-**Status:** PROPOSED | **Target repo:** sage | **Depends on:** 010, 011
+**Status:** PROPOSED | **Target repo:** sage | **Depends on:** 010, 011 | **Repo:** sage
 
 ## Goal
 Make Sage emit a **planning** code-story as a side-effect of its issue pipeline, so the

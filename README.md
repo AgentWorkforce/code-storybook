@@ -72,17 +72,44 @@ Flags / env:
 - `MAX_REVIEW_ITERS` (default 3) — review/fix loop cap
 - `REVIEW_CMD` / `FIX_CMD` — override the reviewer/fixer invocation (default: Ricky local with `_review.md` / `_fix.md`)
 
-### Cross-repo execution (important)
+### Cross-repo dispatch (automatic)
 
-The runner commits in whichever repo it is invoked from. Because storybook is cross-repo:
+Storybook is cross-repo, so each spec declares a machine-readable **`**Repo:**` slug** in its
+header. The runner auto-detects these and switches to **dispatch mode**: each spec is
+implemented in its **target repo** on a `results/storybook` branch, and a draft PR is opened
+**per touched repo** — no manual repo-hopping.
 
-- Build the **shared pieces first** (`@code-story/schema`, `@code-story/skill`, `@code-story/react`)
-  from waves 0–1 and the extract in `030`, publish the package, **then** run the per-product
-  emit/mount specs (waves 2–3) from each target repo — or via Ricky cloud with that repo materialized.
-- The target repo for each spec is in its header and in `PROGRAM.md`'s cross-repo plan.
+Slugs resolve to local repo paths (sibling clones assumed):
 
-Treat each wave (or each target repo's slice of a wave) as a separate Ricky handoff; let the
-review cycle gate each before moving on.
+| slug | resolves to | holds |
+|---|---|---|
+| `code-storybook` | this repo | the shared `@code-story` package (schema, skill, `react` renderer, helper personas) |
+| `sage` | `$PROJECTS_ROOT/sage` | `020` planning story |
+| `my-senior-dev` | `$PROJECTS_ROOT/../My-Senior-Dev/app` | `021` review story, `030` extract, `032` webapp surface |
+| `nightcto` | `$PROJECTS_ROOT/nightcto` | `022` runtime story |
+| `pear` | `$PROJECTS_ROOT/pear` | `031` story view |
+
+`PROJECTS_ROOT` defaults to this repo's parent; override any path with `REPO_<slug>` env
+(e.g. `REPO_my_senior_dev=/path/to/app`). Inspect routing first with `--dry-run`:
+
+```bash
+./scripts/run-overnight.sh storybook --dry-run   # prints START <spec> -> <slug> (<repo>)
+```
+
+Because of dependencies, the shared pieces (waves 0–1 + the `030` extract) build first in
+`code-storybook`; publish `@code-story`, then the per-product specs consume it. The runner
+walks them in order and the review cycle gates each before moving on.
+
+## Spec format & CI
+
+Every numbered spec must carry the sections the runner + reviewer rely on
+(`Goal / In scope / Out of scope / Acceptance / Review / Handoff`) and a valid `**Repo:**`
+slug. `scripts/lint-specs.sh` enforces this and runs in CI (`.github/workflows/lint-specs.yml`)
+on every push/PR touching `specs/`:
+
+```bash
+./scripts/lint-specs.sh        # OK — N specs, all have required sections + a valid **Repo:** header
+```
 
 ## Related
 

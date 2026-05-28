@@ -1,6 +1,6 @@
 # 030 — Shared renderer package (`@code-story/react`)
 
-**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app (extract) → shared `@code-story` | **Depends on:** 001
+**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app (extract) → shared `@code-story` | **Depends on:** 001 | **Repo:** code-storybook
 
 ## Goal
 Extract MSD's existing code-rendering strengths into a shared, **artifact-driven** React

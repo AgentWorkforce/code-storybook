@@ -1,6 +1,6 @@
 # 010 — Story-writer skill
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 001
+**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 001 | **Repo:** code-storybook
 
 ## Goal
 A single callable skill all three agents use to assemble and persist a `CodeStory` to

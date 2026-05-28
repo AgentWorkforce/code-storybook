@@ -1,6 +1,6 @@
 # 031 — Pear `story` view mode
 
-**Status:** PROPOSED | **Target repo:** pear | **Depends on:** 011, 030
+**Status:** PROPOSED | **Target repo:** pear | **Depends on:** 011, 030 | **Repo:** pear
 
 ## Goal
 Add a read-only `story` view to Pear that lists code-stories and renders them by mounting

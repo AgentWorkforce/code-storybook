@@ -1,0 +1,23 @@
+name: lint-specs
+
+# Guards the spec format the overnight runner + reviewer depend on: every numbered
+# spec must carry the required sections and a valid **Repo:** dispatch header.
+
+on:
+  push:
+    paths:
+      - 'specs/**'
+      - 'scripts/lint-specs.sh'
+      - '.github/workflows/lint-specs.yml'
+  pull_request:
+    paths:
+      - 'specs/**'
+      - 'scripts/lint-specs.sh'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint specs
+        run: bash scripts/lint-specs.sh

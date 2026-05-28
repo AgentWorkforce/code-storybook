@@ -1,6 +1,6 @@
 # 021 — MSD review story
 
-**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app | **Depends on:** 010, 011
+**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app | **Depends on:** 010, 011 | **Repo:** my-senior-dev
 
 ## Goal
 Make MSD emit a **review** code-story when it reviews a PR — the diff, the surfaced

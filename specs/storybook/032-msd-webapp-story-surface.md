@@ -1,6 +1,6 @@
 # 032 — MSD webapp story surface
 
-**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app | **Depends on:** 011, 030
+**Status:** PROPOSED | **Target repo:** My-Senior-Dev/app | **Depends on:** 011, 030 | **Repo:** my-senior-dev
 
 ## Goal
 Mount the shared `@code-story/react` renderer in MSD's webapp as the primary **web** surface

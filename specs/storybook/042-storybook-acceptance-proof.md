@@ -1,6 +1,6 @@
 # 042 — Storybook acceptance proof
 
-**Status:** PROPOSED | **Target repo:** shared (cross-repo e2e) | **Depends on:** all prior
+**Status:** PROPOSED | **Target repo:** shared (cross-repo e2e) | **Depends on:** all prior | **Repo:** code-storybook
 
 ## Goal
 One end-to-end proof: a single subject produces a planning + review + runtime story, each

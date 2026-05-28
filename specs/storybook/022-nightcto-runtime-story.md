@@ -1,6 +1,6 @@
 # 022 — NightCTO runtime story
 
-**Status:** PROPOSED | **Target repo:** nightcto | **Depends on:** 010, 011
+**Status:** PROPOSED | **Target repo:** nightcto | **Depends on:** 010, 011 | **Repo:** nightcto
 
 ## Goal
 Make NightCTO emit a **runtime** code-story when it handles a high-urgency incident — the

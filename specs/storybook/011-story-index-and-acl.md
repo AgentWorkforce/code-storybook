@@ -1,6 +1,6 @@
 # 011 — Story index & ACL
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 010
+**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 010 | **Repo:** code-storybook
 
 ## Goal
 Make stories discoverable (an index the renderer lists) and access-correct (agents write,

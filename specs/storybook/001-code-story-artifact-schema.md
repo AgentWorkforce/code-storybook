@@ -1,6 +1,6 @@
 # 001 — Code-story artifact schema
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 000
+**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** 000 | **Repo:** code-storybook
 
 ## Goal
 Define the versioned `CodeStory` artifact: the single structured document every layer

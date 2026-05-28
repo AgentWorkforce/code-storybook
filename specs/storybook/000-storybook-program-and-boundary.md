@@ -1,6 +1,6 @@
 # 000 — Storybook program & boundary
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** —
+**Status:** PROPOSED | **Target repo:** shared `@code-story` package | **Depends on:** — | **Repo:** code-storybook
 
 ## Goal
 Freeze the storybook scope as a checked-in document: the three layers, the artifact

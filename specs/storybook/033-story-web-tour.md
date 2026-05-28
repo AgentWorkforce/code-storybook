@@ -1,6 +1,6 @@
 # 033 — Story web tour (stepped mode)
 
-**Status:** PROPOSED | **Target repo:** shared `@code-story/react` (hosted by MSD webapp + Pear) | **Depends on:** 030, 032
+**Status:** PROPOSED | **Target repo:** shared `@code-story/react` (hosted by MSD webapp + Pear) | **Depends on:** 030, 032 | **Repo:** code-storybook
 
 ## Goal
 A guided, storybook-style walkthrough of a code-story — the dream's "walks me through it
